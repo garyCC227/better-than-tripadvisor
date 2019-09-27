@@ -1,0 +1,713 @@
+{% extends "base.html" %}
+
+{% block title %}<title>Search result page</title> {% endblock %}
+
+
+{% block content %}
+<style media="screen">
+html
+{
+    font-family:verdana !important;
+}
+</style>
+
+    <!--page content-->
+    <div class="w3-content w3-margin-top" onload="populateResults()" onclick="populateResults()">
+        <!-- Header -->
+        <header class="w3-container w3-center w3-border-bottom w3-padding-48 w3-white">
+            <!-- the title here will be varibles-->
+            <h2 class="w3-xxlarge" style="font-family:Arial;"><b class="text-dark">Search {% if category %}<i class="w3-opacity-min w3-text-grey " >{{category}}</i>{% endif %} by {% if keyword %}<i class="w3-opacity-min w3-text-white w3-blue" style="padding:5px;padding-right:10px;">{{keyword}}</i>{% endif %}</b></h2>
+            <h4 class="w3-margin-left" style="font-family:Arial;">Travel <span class="w3-tag bg-info" >Singapore</span> with us<i class="fa fa-plane text-info w3-margin-left w3-large"></i></h4>
+        </header>
+
+        <!--search result and filter-->
+        <div class="w3-row-padding w3-margin-top">
+
+            <!-- Left Column for filter-->
+            <div class="w3-third">
+
+                <div class="w3-white w3-text-grey w3-card-4">
+                    <div id="selection" class="w3-container">
+                        <h1 class="text-dark"><b>Selections</b></h1>
+                        <div class="w3-container">
+                            <input  class="w3-check" type="checkbox" id="restCB" onclick="checkFilters()" >
+                            <label>Restaurants</label>
+                        </div>
+                        <div class="w3-container">
+                            <input  class="w3-check" type="checkbox"  id="attrCB" onclick="checkFilters()">
+                            <label>Attractions</label>
+                        </div>
+                        <div class="w3-container">
+                            <input  class="w3-check" type="checkbox"  id="hotlCB" onclick="checkFilters()">
+                            <label>Hotels</label>
+                        </div>
+                    </div>
+                    <hr>
+
+                    <div id="restaurantFilters" class="w3-container" style="display: none;">
+                        <h1 class="text-dark"><b>Cuisines</b></h1>
+                        <div class="w3-container">
+                            <input id="jap" type="checkbox" onclick="checkFilters()" >
+                            <label>Japanese</label>
+                        </div>
+                        <div class="w3-container">
+                            <input id="fre" type="checkbox" onclick="checkFilters()" >
+                            <label>French</label>
+                        </div>
+                        <div class="w3-container">
+                            <input id="caf" type="checkbox" onclick="checkFilters()" >
+                            <label>Cafe</label>
+                        </div>
+                        <div class="w3-container">
+                            <input id="aus" type="checkbox" onclick="checkFilters()" >
+                            <label>Modern Australian</label>
+                        </div>
+                        <div class="w3-container">
+                            <input id="chi" type="checkbox" onclick="checkFilters()" >
+                            <label>Chinese</label>
+                        </div>
+                        <hr>
+                        <h1 class="text-dark"><b>Dietary Restrictions</b></h1>
+                        <div class="w3-container">
+                            <input id="gf" type="checkbox" onclick="checkFilters()" >
+                            <label>Gluten Free</label>
+                        </div>
+                        <div class="w3-container">
+                            <input id="veg" type="checkbox" onclick="checkFilters()" >
+                            <label>Vegeterian</label>
+                        </div>
+                        <div class="w3-container">
+                            <input id="hal" type="checkbox" onclick="checkFilters()" >
+                            <label>Halal</label>
+                        </div>
+                    </div>
+                    <hr>
+
+                    <div id="attractionFilters" class="w3-container" style="display: none;">
+                        <h1 class="text-dark"><b>Type</b></h1>
+                        <div class="w3-container">
+                            <input  id ="out"type="checkbox" onclick="checkFilters()" >
+                            <label>Outdoor Activities</label>
+                        </div>
+                        <div class="w3-container">
+                            <input id="trs" type="checkbox" onclick="checkFilters()" >
+                            <label>Tours</label>
+                        </div>
+                        <div class="w3-container">
+                            <input id="nat" type="checkbox" onclick="checkFilters()" >
+                            <label>Nature & Parks</label>
+                        </div>
+                        <div class="w3-container">
+                            <input id="hys"type="checkbox" onclick="checkFilters()" >
+                            <label>Historically Significant</label>
+                        </div>
+                        <div class="w3-container">
+                            <input id="lnd" type="checkbox" onclick="checkFilters()" >
+                            <label>Sights and Landmarks</label>
+                        </div>
+                    </div>
+                    <hr>
+
+                    <div id="accommodationFilters" class="w3-container" style="display: none;">
+                        <h1 class="text-dark"><b>Type</b></h1>
+                        <div class="w3-container">
+                            <input  id="hot" type="checkbox" onclick="checkFilters()" >
+                            <label>Hotel</label>
+                        </div>
+                        <div class="w3-container">
+                            <input  id="bak" type="checkbox" onclick="checkFilters()" >
+                            <label>Backpacker Hostel</label>
+                        </div>
+                        <div class="w3-container">
+                            <input  id="res" type="checkbox" onclick="checkFilters()" >
+                            <label>Resorts</label>
+                        </div>
+                        <div class="w3-container">
+                            <input  id="ser" type="checkbox" onclick="checkFilters()" >
+                            <label>Serviced Apartments</label>
+                        </div>
+                        <div class="w3-container">
+                            <input  id="oth" type="checkbox" onclick="checkFilters()" >
+                            <label>Others</label>
+                        </div>
+                    </div>
+                    <hr>
+                </div><br>
+
+                <!-- End Left Column -->
+            </div>
+
+            <!-- Right Column -->
+            <div class="w3-twothird">
+
+                    <!-- start to loop all the results box-->
+                    {% if results %}
+                    {% for result in results%}
+                    <!--each result box-->
+                    <div class="w3-container w3-card w3-white w3-margin-bottom" id="{{result['uuid']}}">
+                    <form action="{{ url_for('show_detail_by_id') }}" method="post">
+                    <button type="submit" name="place_id" value="{{result['uuid']}}" class="w3-container w3-border-0 w3-margin-top w3-margin-bottom btn btn-outline-light" style="width:600px;" onmouseover="details(this, '{{result['address']}}', {{result['tags']}},'{{result['amenities']}}')" onmouseout="removedetails(this)">
+                    <input type="text" name="category" value="{{ category }}" style="display:none">
+                    <input type="text" name="keyword" value="{{ keyword }}" style="display:none">
+                        <div class="w3-half">
+                            <!-- if you want to see photos, put your API key into the src link-->
+                            {% if result['images']|length > 0 %}
+                            <img src="https://tih-api.stb.gov.sg/media/v1/download/uuid/{{ result['images'][0]['uuid'] }}?apikey=BFqkp4V35i0fXflQav9OYnolQuEMLGAg" style="width:100%;height:200px" >
+                            {% else %}
+                            <img src="/static/style/no_image.svg" style="width:100%;height:200px" >
+                            {% endif %}
+                        </div>
+                        <div class="w3-quarter text-dark w3-display-container">
+                            <div class="w3-container w3-left-align ml-md-3" style="width: 300px;">
+                                <h2 class="text-primary" style="white-space:normal;font-family:Arial;" ><b>{{ result['name'] |safe}}</b></h2>
+                                <h5 class="w3-medium" style="font-family:Arial;"><b>{{ result['type'].capitalize() }}</b></h5>
+                                <hr class="ml-md-0">
+                                <span >{% if 'Singapore Tourism Award' in result['tags'] %}
+                                            <b style="font-family:Arial;">Tourist Award:</b> <i class="w3-text-red w3-opacity-min"><i class="fas fa-trophy  w3-medium"></i> <i class="fas fa-trophy  w3-medium"></i> <i class="fas fa-trophy w3-medium"></i> </i>
+                                    {% else %}
+                                        {% if category == 'All' or category == 'Attraction' %}
+                                            {% if result['ticketed'] == "Y" %}
+                                                <b style="font-family:Arial;">Ticket: </b>  <i class="fas fa-check w3-text-green w3-medium" ></i>
+                                            {% else %}
+                                                <b style="font-family:Arial;">Ticket: </b> <i class="fas fa-times w3-text-red w3-medium" ></i>
+                                            {% endif %}
+                                        {% else %}
+                                            <br>
+                                            <!-- FIXME -->
+                                        {% endif %}
+                                    {% endif %}</span>
+                                <br><br><br><br>
+                                <h4><b class="text-monospace">Rating:</b> <b class="text-monospace w3-text-orange w3-large">{{ result['rating'] }}</b></h4>
+                                <span class="btn btn-outline-danger">{{ result['tags'][0] }}</span> <span class="btn btn-outline-success">{{ result['tags'][1] }}</span>
+                            </div>
+                        </div>
+                    </button>
+                    </form>
+                    </div>
+                    <!--end of result box and end of loop all the result box-->
+                    {% endfor %}
+                    {% endif %}
+
+                <!-- End Right Column -->
+            </div>
+            <!-- End Grid -->
+        </div>
+        <!--end of page content-->
+
+
+        <script type="text/javascript">
+        // Patricks api key = AIzaSyA6XIMfWuuzAUEHp96VAhZtOOGIu0pmgHE
+        //var DATA = '../restaurant.json'
+        const APIKEY = "AIzaSyA6XIMfWuuzAUEHp96VAhZtOOGIu0pmgHE";
+        //Show and hide filters
+        function checkFilters() {
+            var results ={{results|tojson}};
+            //Resetting all results to visible
+            for (var result in results){
+                document.getElementById(results[result]["uuid"]).style.display = "block";
+            }
+            var restCB = document.getElementById("restCB");
+            var attrCB = document.getElementById("attrCB");
+            var hotlCB = document.getElementById("hotlCB");
+            var restaurantFilters = document.getElementById("restaurantFilters");
+            var attractionFilters = document.getElementById("attractionFilters");
+            var accommodationFilters = document.getElementById("accommodationFilters");
+            if (restCB.checked == true){
+                restaurantFilters.style.display = "block";
+                var allowed = 0;
+                for (var result in results){
+                    allowed = 0;
+                    if (results[result]["type"] == "RESTAURANT") allowed = 1;
+                    for (var tag in results[result]["tags"]){
+                        var currentTag = results[result]["tags"][tag];
+                        if (/.*food.*/i.test(currentTag) || /.*dining.*/i.test(currentTag)){
+                            allowed = 1;
+                        }
+                    }
+                    if (allowed == 0){
+                        document.getElementById(results[result]["uuid"]).style.display = "none";
+                    }
+                }
+            }else{
+                restaurantFilters.style.display = "none";
+                //unchecking any checked boxes
+                var elements = restaurantFilters.getElementsByTagName('input');
+                for (var i = 0; elements[i] != null; i++){
+                    elements[i].checked = false;
+                }
+            }
+            if (attrCB.checked == true){
+                attractionFilters.style.display = "block";
+                var allowed = 0;
+                for (var result in results){
+                    allowed = 0;
+                    if ( /.*ho[st]+el.*/i.test(results[result]["type"]) || /.*apartment.*/i.test(results[result]["type"]|| results[result]["type"] == "RESORT" )) allowed = 1;
+                    for (var tag in results[result]["tags"]){
+                        var currentTag = results[result]["tags"][tag];
+                        if (/.*landmark.*/i.test(currentTag) || /.*nature.*/i.test(currentTag) || /.*tour.*/i.test(currentTag) || /.*attraction.*/i.test(currentTag) || /.*unique.*/i.test(currentTag)){
+                            allowed = 1;
+                        }
+                    }
+                    if (allowed == 0){
+                        document.getElementById(results[result]["uuid"]).style.display = "none";
+                    }
+                }
+            }else{
+                attractionFilters.style.display = "none";
+                //unchecking any checked boxes
+                var elements = attractionFilters.getElementsByTagName('input');
+                for (var i = 0; elements[i] != null; i++){
+                    elements[i].checked = false;
+                }
+            }
+            if (hotlCB.checked == true){
+                accommodationFilters.style.display = "block";
+                var allowed = 0;
+                for (var result in results){
+                    allowed = 0;
+                    if (results[result]["type"] == "HOTEL" || results[result]["type"] == "RESORT" ) allowed = 1;
+                    for (var tag in results[result]["tags"]){
+                        var currentTag = results[result]["tags"][tag];
+                        if (/.*Landmarks.*/i.test(currentTag) || /.*Attractions.*/i.test(currentTag)){
+                            allowed = 1;
+                        }
+                    }
+                    if (allowed == 0){
+                        document.getElementById(results[result]["uuid"]).style.display = "none";
+                    }
+                }
+            }else{
+                accommodationFilters.style.display = "none";
+                //unchecking any checked boxes
+                var elements = accommodationFilters.getElementsByTagName('input');
+                for (var i = 0; elements[i] != null; i++){
+                    elements[i].checked = false;
+                }
+            }
+
+            //using filters
+            if (restCB.checked == true){
+                if (document.getElementById("jap").checked == true){
+                   var allowed = 0;
+                    for (var result in results){
+                        allowed = 0;
+                        for (var tag in results[result]["tags"]){
+                            var currentTag = results[result]["tags"][tag];
+                            if (/.*japan.*/i.test(currentTag) || /.*japan.*/i.test(results[result]["name"]) || /.*japan.*/i.test(results[result]["cuisine"])){
+                                allowed = 1;
+                            }
+                        }
+                        if (allowed == 0){
+                            document.getElementById(results[result]["uuid"]).style.display = "none";
+                        }
+                    }
+                }
+                if (document.getElementById("fre").checked == true){
+                   var allowed = 0;
+                    for (var result in results){
+                        allowed = 0;
+                        for (var tag in results[result]["tags"]){
+                            var currentTag = results[result]["tags"][tag];
+                            if (/.*french.*/i.test(currentTag) || /.*french.*/i.test(results[result]["name"]) || /.*french.*/i.test(results[result]["cuisine"])){
+                                allowed = 1;
+                            }
+                        }
+                        if (allowed == 0){
+                            document.getElementById(results[result]["uuid"]).style.display = "none";
+                        }
+                    }
+                }
+                if (document.getElementById("caf").checked == true){
+                   var allowed = 0;
+                    for (var result in results){
+                        allowed = 0;
+                        for (var tag in results[result]["tags"]){
+                            var currentTag = results[result]["tags"][tag];
+                            if (/.*cafe.*/i.test(currentTag) || /.*cafe.*/i.test(results[result]["name"]) || /.*cafe.*/i.test(results[result]["cuisine"])){
+                                allowed = 1;
+                            }
+                        }
+                        if (allowed == 0){
+                            document.getElementById(results[result]["uuid"]).style.display = "none";
+                        }
+                    }
+                }
+                if (document.getElementById("aus").checked == true){
+                   var allowed = 0;
+                    for (var result in results){
+                        allowed = 0;
+                        for (var tag in results[result]["tags"]){
+                            var currentTag = results[result]["tags"][tag];
+                            if (/.*australia.*/i.test(currentTag) || /.*australia.*/i.test(results[result]["name"]) || /.*australia.*/i.test(results[result]["cuisine"])){
+                                allowed = 1;
+                            }
+                        }
+                        if (allowed == 0){
+                            document.getElementById(results[result]["uuid"]).style.display = "none";
+                        }
+                    }
+                }
+                if (document.getElementById("chi").checked == true){
+                   var allowed = 0;
+                    for (var result in results){
+                        allowed = 0;
+                        for (var tag in results[result]["tags"]){
+                            var currentTag = results[result]["tags"][tag];
+                            if (/.*chinese.*/i.test(currentTag) || /.*chin.*/i.test(results[result]["name"]) || /.*chinese.*/i.test(results[result]["cuisine"])){
+                                allowed = 1;
+                            }
+                        }
+                        if (allowed == 0){
+                            document.getElementById(results[result]["uuid"]).style.display = "none";
+                        }
+                    }
+                }
+
+                if (document.getElementById("gf").checked == true){
+                   var allowed = 0;
+                    for (var result in results){
+                        allowed = 0;
+                        for (var tag in results[result]["tags"]){
+                            var currentTag = results[result]["tags"][tag];
+                            if (/.*gluten.*/i.test(currentTag) || /.*gluten.*/i.test(results[result]["name"]) || /.*gluten.*/i.test(results[result]["cuisine"])){
+                                allowed = 1;
+                            }
+                        }
+                        if (allowed == 0){
+                            document.getElementById(results[result]["uuid"]).style.display = "none";
+                        }
+                    }
+                }
+                if (document.getElementById("veg").checked == true){
+                   var allowed = 0;
+                    for (var result in results){
+                        allowed = 0;
+                        for (var tag in results[result]["tags"]){
+                            var currentTag = results[result]["tags"][tag];
+                            if (/.*vege.*/i.test(currentTag) || /.*vege.*/i.test(results[result]["name"]) || /.*vege.*/i.test(results[result]["cuisine"])){
+                                allowed = 1;
+                            }
+                        }
+                        if (allowed == 0){
+                            document.getElementById(results[result]["uuid"]).style.display = "none";
+                        }
+                    }
+                }
+                if (document.getElementById("hal").checked == true){
+                   var allowed = 0;
+                    for (var result in results){
+                        allowed = 0;
+                        for (var tag in results[result]["tags"]){
+                            var currentTag = results[result]["tags"][tag];
+                            if (/.*halal.*/i.test(currentTag) || /.*halal.*/i.test(results[result]["name"]) || /.*halal.*/i.test(results[result]["cuisine"])){
+                                allowed = 1;
+                            }
+                        }
+                        if (allowed == 0){
+                            document.getElementById(results[result]["uuid"]).style.display = "none";
+                        }
+                    }
+                }
+
+            }
+
+            //checking attraction subfilters
+            if (attrCB.checked == true){
+
+                if (document.getElementById("out").checked == true){
+                   var allowed = 0;
+                    for (var result in results){
+                        allowed = 0;
+                        for (var tag in results[result]["tags"]){
+                            var currentTag = results[result]["tags"][tag];
+                            if (/.*outdoors.*/i.test(currentTag) || /.*outdoor.*/i.test(results[result]["name"])){
+                                allowed = 1;
+                            }
+                        }
+                        if (allowed == 0){
+                            document.getElementById(results[result]["uuid"]).style.display = "none";
+                        }
+                    }
+                }
+                if (document.getElementById("trs").checked == true){
+                   var allowed = 0;
+                    for (var result in results){
+                        allowed = 0;
+                        for (var tag in results[result]["tags"]){
+                            var currentTag = results[result]["tags"][tag];
+                            if (/.*tour.*/i.test(currentTag) || /.*tour.*/i.test(results[result]["name"])){
+                                allowed = 1;
+                            }
+                        }
+                        if (allowed == 0){
+                            document.getElementById(results[result]["uuid"]).style.display = "none";
+                        }
+                    }
+                }
+                if (document.getElementById("nat").checked == true){
+                   var allowed = 0;
+                    for (var result in results){
+                        allowed = 0;
+                        for (var tag in results[result]["tags"]){
+                            var currentTag = results[result]["tags"][tag];
+                            if (/.*parks and gardens.*/i.test(currentTag) || /.*nature.*/i.test(results[result]["name"]) || results[result]["type"] == "NATURE WILDLIFE"){
+                                allowed = 1;
+                            }
+                        }
+                        if (allowed == 0){
+                            document.getElementById(results[result]["uuid"]).style.display = "none";
+                        }
+                    }
+                }
+                if (document.getElementById("hys").checked == true){
+                   var allowed = 0;
+                    for (var result in results){
+                        allowed = 0;
+                        for (var tag in results[result]["tags"]){
+                            var currentTag = results[result]["tags"][tag];
+                            if (results[result]["type"] == "HISTORY CULTURE" || /.*histor.*/i.test(results[result]["name"])){
+                                allowed = 1;
+                            }
+                        }
+                        if (allowed == 0){
+                            document.getElementById(results[result]["uuid"]).style.display = "none";
+                        }
+                    }
+                }
+                if (document.getElementById("lnd").checked == true){
+                    var allowed = 0;
+                    for (var result in results){
+                        allowed = 0;
+                        for (var tag in results[result]["tags"]){
+                            var currentTag = results[result]["tags"][tag];
+                            if (/.*landmark.*/i.test(currentTag)){
+                                allowed = 1;
+                            }
+                        }
+                        if (allowed == 0){
+                            document.getElementById(results[result]["uuid"]).style.display = "none";
+                        }
+                    }
+                }
+            }
+            if (hotlCB.checked == true){
+            
+                if (document.getElementById("bak").checked == true){
+                    var allowed = 0;
+                    for (var result in results){
+                        allowed = 0;
+                        for (var tag in results[result]["tags"]){
+                            var currentTag = results[result]["tags"][tag];
+                            if (/.*backpacker.*/i.test(currentTag) || /.*backpacker.*/i.test(results[result]["type"])){
+                                allowed = 1;
+                            }
+                        }
+                        if (allowed == 0){
+                            document.getElementById(results[result]["uuid"]).style.display = "none";
+                        }
+                    }
+                }
+                if (document.getElementById("hot").checked == true){
+                    var allowed = 0;
+                    for (var result in results){
+                        allowed = 0;
+                        for (var tag in results[result]["tags"]){
+                            var currentTag = results[result]["tags"][tag];
+                            if (/.*hotel.*/i.test(currentTag) || /.*hotel.*/i.test(results[result]["type"])){
+                                allowed = 1;
+                            }
+                        }
+                        if (allowed == 0){
+                            document.getElementById(results[result]["uuid"]).style.display = "none";
+                        }
+                    }
+                }
+                if (document.getElementById("res").checked == true){
+                    var allowed = 0;
+                    for (var result in results){
+                        allowed = 0;
+                        for (var tag in results[result]["tags"]){
+                            var currentTag = results[result]["tags"][tag];
+                            if (/.*resort.*/i.test(currentTag) || /.*resort.*/i.test(results[result]["type"])){
+                                allowed = 1;
+                            }
+                        }
+                        if (allowed == 0){
+                            document.getElementById(results[result]["uuid"]).style.display = "none";
+                        }
+                    }
+                }
+                if (document.getElementById("ser").checked == true){
+                    var allowed = 0;
+                    for (var result in results){
+                        allowed = 0;
+                        for (var tag in results[result]["tags"]){
+                            var currentTag = results[result]["tags"][tag];
+                            if (/.*serviced.*/i.test(currentTag) || /.*serviced.*/i.test(results[result]["type"])){
+                                allowed = 1;
+                            }
+                        }
+                        if (allowed == 0){
+                            document.getElementById(results[result]["uuid"]).style.display = "none";
+                        }
+                    }
+                }
+                if (document.getElementById("oth").checked == true){
+                    var allowed = 0;
+                    for (var result in results){
+                        allowed = 0;
+                        for (var tag in results[result]["tags"]){
+                            var currentTag = results[result]["tags"][tag];
+                            if (/.*others.*/i.test(currentTag) || /.*others.*/i.test(results[result]["type"])){
+                                allowed = 1;
+                            }
+                        }
+                        if (allowed == 0){
+                            document.getElementById(results[result]["uuid"]).style.display = "none";
+                        }
+                    }
+                }
+            }
+
+        }
+        function details(currE, address, tags, amenities){
+            /*
+            if (address.length > 30){
+                var replacenow = 0;
+                for (var i=0; i < address.length;i++){
+                    if (i%20 == 0){
+                        replacenow = 1;
+                    }
+                    if (address[i] == " " && replacenow == 1){
+                        address = address.slice(0,i) + "\n" + address.slice(i+1, address.length-1);
+                        replacenow = 0;
+                    }
+                }
+            }
+            */
+            var hoverbox = document.createElement("div");
+            hoverbox.setAttribute("id", "hoverbox");
+            //hoverbox.style.border = "2px solid black";
+            hoverbox.style.maxWidth = "500px";
+            hoverbox.style.height = "170px";
+            hoverbox.style.width = "450px";
+            hoverbox.style.zIndex ="20";
+
+            //style of hover text
+            var hovertext = document.createElement("div");
+            hovertext.className = "w3-container";
+            hovertext.style += ";white-space:normal;;width:450px;font-family:Arial;font-size:14px;margin-top:5px;;z-index:20"
+
+            //amenities, address
+            //hovertext.innerHTML = `<b>${amenities}</b><br> <b>Type: ${tags}</b> <br><br> <b>address:  ${address}</b><br>`;
+            var amen = document.createElement('div');
+            amen.className = 'w3-row';
+            amen.innerHTML = `<b class="text-dark" style="opacity:0.8">Address: </b> <span style="opacity:0.6;text-decoration:underline">${address}</span> <br><b class="text-dark" style="opacity:0.8">Amenity: </b> <span class="" style="opacity:0.6;text-decoration:underline">${amenities}</span> <br><br>`
+            hovertext.appendChild(amen);
+
+            //tags
+            var temp = document.createElement('row');
+            temp.className = "w3-row";
+            temp.innerHTML = `<b class="w3-text-blue w3-small">Features:</b><br>`;
+            btn_color = ['danger', 'success', 'warning','info','primary'];
+            for(var j=0;j<tags.length;j++){
+                if(j==10){break;}
+                var btn = document.createElement('span');
+                btn.className = 'btn btn-'+btn_color[Math.floor(Math.random() * btn_color.length)];
+                btn.style ="margin:2px;padding:6px;"
+                btn.textContent = " "+tags[j]+" ";
+                temp.appendChild(btn)
+            }
+
+            hovertext.appendChild(temp);
+
+            //hoverdesc = document.createTextNode(hoverdesc);
+            //hovertext.appendChild(text);
+            hoverbox.className = "w3-container w3-border w3-margin-top w3-margin-bottom w3-white btn";
+            hoverbox.style.fontFamily = "verdana"
+            hoverbox.style.textAlign = "left";
+
+
+            hoverbox.appendChild(hovertext);
+
+            currE.appendChild(hoverbox);
+        }
+        function removedetails(currE){
+            var hoverbox = document.getElementById("hoverbox");
+            hoverbox.parentNode.removeChild(hoverbox);
+        }
+        // back to top
+        window.onscroll = function() {scrollFunction()};
+
+        function scrollFunction() {
+            if (document.body.scrollTop > 20 || document.documentElement.scrollTop > 20) {
+                document.getElementById("myBtn").style.display = "block";
+            } else {
+                document.getElementById("myBtn").style.display = "none";
+            }
+        }
+
+        function populateResults(){
+        /* Old method for creating new searches
+            var url = document.URL;
+            console.log(url);
+            var params = new URLSearchParams(url);
+            var apiURL = 'https://maps.googleapis.com/maps/api/place/textsearch/json?query=';
+            var temp = params.values();
+            var i = 0;
+            var keywords = [];
+            var ele = temp.next().value;
+            while (ele != undefined){
+
+                keywords = keywords.concat(ele.split(" "));
+                ele = temp.next().value;
+            }
+            console.log(keywords);
+            for (words in keywords){
+                if (words != 0) apiURL += "+";
+                apiURL += keywords[words];
+            }
+
+
+            console.log(params.get("keywords"));
+            apiURL += "&key=" + APIKEY;
+            console.log("APIURL = ");
+            console.log(apiURL);
+
+            var request = new XMLHttpRequest();
+            request.open('GET', apiURL, true);
+
+            request.onload = function(){
+                if(this.status != 200){
+                    console.log("hello")
+                }else{
+
+                    var data = JSON.parse(this.response);
+                    console.log(data);
+                    buildResults(data);
+                }
+            }
+            request.send()
+            console.log('status: ' + request.statusText);
+        */
+        }
+
+        // When the user clicks on the button, scroll to the top of the document
+        function topFunction() {
+            document.body.scrollTop = 0; // For Safari
+            document.documentElement.scrollTop = 0; // For Chrome, Firefox, IE and Opera
+        }
+
+        //Hover
+        function hover(){
+            x = document.getElementById('hover');
+            if(x.style.display == "none"){
+                x.style.display = "block";
+            }else{
+                x.style.display = "none";
+            }
+
+        }
+
+        </script>
+{% endblock%}

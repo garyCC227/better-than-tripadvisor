@@ -1,0 +1,171 @@
+<!-- base2.html is the base html file that contain the top banner and back to top button-->
+<!DOCTYPE html>
+<html>
+{% block title %}
+{% endblock %}
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+
+<link rel='stylesheet' href='https://use.fontawesome.com/releases/v5.7.0/css/all.css' integrity='sha384-lZN37f5QGtY3VHgisS14W3ExzMWZxybE1SJSEsQp9S+oqd12jhcu+A56Ebc1zFSJ' crossorigin='anonymous'>
+<link rel="stylesheet" href="https://www.w3schools.com/w3css/4/w3.css">
+<link rel="stylesheet" href="https://fonts.googleapis.com/css?family=Raleway">
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/4.7.0/css/font-awesome.min.css">
+<link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/css/bootstrap.min.css">
+<link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.3.1/css/bootstrap.min.css" integrity="sha384-ggOyR0iXCbMQv3Xipma34MD+dH/1fQ784/j6cY/iJTQUOhcWr7x9JvoRxT2MZw1T" crossorigin="anonymous">
+<link rel="stylesheet" type="text/css" href=" {{ url_for('static',filename='home.css')}}">
+
+<body class="w3-light-grey">
+
+    <!-- Navigation Bar -->
+    <div class="myNavbar" style="z-index: 20;" >
+        <a href='/profile' class='w3-right' style="margin-right:10px"><i class="fa fa-user"></i> My Profile</a>
+        <a href="/home" class="w3-right"><i class="fa fa-home"></i> HOME</a>
+        <a href="/home" class="italic w3-left"> <strong>Better-Than-TripAdvisor</strong></a>
+        {% if current_user.is_authenticated %}
+        <form class="" action="{{ url_for('log_out') }}">
+            <button class="w3-button w3-right w3-large w3-border-0 text-white" type="submit" style="padding:13px"><i class="fa fa-sign-out"></i> Log out</button>
+        </form>
+        {% else %}
+            <a href="/login" class="w3-right"><i class="fa fa-sign-in"></i> Login</a>
+        {% endif %}
+        <button class="w3-button w3-right w3-large w3-border-0 text-white" data-toggle="modal" data-target="#myModal" style="padding:13px"><i class="fa fa-search"></i></button>
+    </div>
+
+    <style>
+    .italic {
+        font-style: italic;
+        }
+
+    .myNavbar {
+      overflow: hidden;
+      background-color: #333;
+      position: fixed;
+      top: 0;
+      width: 100%;
+    }
+
+    .myNavbar a {
+      display: block;
+      color: #f2f2f2;
+      text-align: center;
+      padding: 14px 16px;
+      text-decoration: none;
+      font-size: 17px;
+    }
+
+    .myNavbar a:hover {
+      background: #ddd;
+      color: black;
+    }
+
+    </style>
+    <!--Back to top button-->
+    <button class="btn btn-outline-info w3-xxlarge w3-display-bottomright" onclick="topFunction()" id="myBtn" title="Go to top" style="position: fixed;z-index:99;font-size:18px;border:none;cursor:pointer"><i class="glyphicon glyphicon-chevron-up"></i></button>
+
+    <!-- small search bar -->
+    <div class="modal w3-display-container" id="myModal" role="dialog" style="margin-top:200px;">
+        <div class="w3-display-topmiddle">
+
+            <!-- small search bar content-->
+            <div class="modal-content w3-display-container" style="width:900px;height:240px;">
+                <div class="modal-header text-info">
+                    <h2 class="text-monospace w3-xlarge w3-display-topmiddle" style="margin:15px;" ><i class="fa fa-plane w3-margin-right glyphicon glyphicon-search"></i>Where to?</h2>
+                    <button type="button" class="text-info close w3-right w3-xxlarge" data-dismiss="modal">&times;</button>
+                </div>
+                <!-- search bar -->
+                <div class="modal-body">
+                    <nav class="navbar navbar-expand-lg navbar-light bg-light" style="margin:1px">
+                        <div class="collapse navbar-collapse">
+                            <ul class="navbar-nav mr-auto w3-xlarge" style="padding:20px">
+                                <!--Big search bar input-->
+                                <form id="small-search" action="{{ url_for('search_bar')}}" method="post">
+                                <li class="nav-item btn-group">
+                                    <button id="category2" name="category" type="button" value="all" class="btn btn-light text-info dropdown-toggle w3-large" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
+                                    Category</button>
+                                    <div class="dropdown-menu mr-auto">
+                                        <option class="dropdown-item w3-large text-info"  id="res" value="resturant" onclick="changeCate(event, 'category2')">Resturant</option>
+                                        <option class="dropdown-item w3-large text-info" id="accom" value="accommodation" onclick="changeCate(event, 'category2')">Hotel</option>
+                                        <option class="dropdown-item w3-large text-info" id="attraction" value="attractions" onclick="changeCate(event, 'category2')">Tourist attraction</option>
+                                    </div>
+                                </li>
+                                <li class="nav-item w3-display-right" style="width:80%;">
+                                    <div class="my-2 my-lg-0">
+                                        <input id="submit2" name="submit" value="all" style="display:none">
+                                        <input class="form-control w3-margin-right w3-large text-dark w3-right" name="search_input" style="height:50px;width:90%;max-width:800px;" type="search" placeholder="Search" aria-label="Search">
+                                    </div>
+                                </li>
+                            </form>
+                            </ul>
+                        </div>
+                    </nav>
+                </div>
+                <!-- search bar end  -->
+                <div class="modal-footer">
+                    <button type="submit" form="small-search" class="btn btn-info w3-large text-monospace">Search</button>
+                    <button type="button" class="btn btn-default text-info w3-large text-monospace" data-dismiss="modal">Close</button>
+                </div>
+            </div>
+            <!-- end small search bar content -->
+
+        </div>
+    </div>
+
+
+    <script>
+    window.onclick = function(event) {
+        if (event.target == modal) {
+            modal.style.display = "none";
+        }
+    }
+    </script>
+    <!-- end small search bar -->
+
+    {% block content %}{% endblock %}
+
+
+
+    <script>
+    // back to top
+    window.onscroll = function() {scrollFunction()};
+
+    function scrollFunction() {
+        if (document.body.scrollTop > 20 || document.documentElement.scrollTop > 20) {
+            document.getElementById("myBtn").style.display = "block";
+        } else {
+            document.getElementById("myBtn").style.display = "none";
+        }
+    }
+
+    // When the user clicks on the button, scroll to the top of the document
+    function topFunction() {
+        document.body.scrollTop = 0; // For Safari
+        document.documentElement.scrollTop = 0; // For Chrome, Firefox, IE and Opera
+    }
+
+    function openLink(evt, linkName) {
+        var i, x, tablinks;
+        x = document.getElementsByClassName("myLink");
+        for (i = 0; i < x.length; i++) {
+            x[i].style.display = "none";
+        }
+        document.getElementById(linkName).style.display = "block";
+    }
+
+    //change category
+    function changeCate(evt, id){
+        chosen_value = evt.currentTarget.value
+        x = document.getElementById(id)
+        if(id == 'category2'){
+            y = document.getElementById('submit2')
+        }else{
+            y = document.getElementById('submit')
+        }
+        x.value = chosen_value
+        y.value = chosen_value
+        x.innerText = chosen_value.charAt(0).toUpperCase() + chosen_value.slice(1)
+    }
+    </script>
+    <script src="https://code.jquery.com/jquery-3.1.1.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/popper.js/1.12.9/umd/popper.min.js" integrity="sha384-ApNbgh9B+Y1QKtv3Rn7W3mgPxhU9K/ScQsAP7hUibX39j7fakFPskvXusvfa0b4Q" crossorigin="anonymous"></script>
+    <script src="https://maxcdn.bootstrapcdn.com/bootstrap/4.0.0/js/bootstrap.min.js" integrity="sha384-JZR6Spejh4U02d8jOt6vLEHfe/JQGiRRSQQxSfFWpi1MquVdAyjUar5+76PVCmYl" crossorigin="anonymous"></script>
+</body>

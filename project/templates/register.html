@@ -1,0 +1,40 @@
+{% extends "base.html" %}
+
+{% block title %} <title>Sign up</title>{% endblock %}
+
+
+{% block content %}
+
+    <div class="w3-container bg-light w3-display-middle w3-card" style="width:600px;height:500px;">
+        <header class="w3-center text-info w3-xxlarge"> <b>Sign Up form</b></header>
+        <hr>
+        <div class="w3-third w3-light-blue w3-border-right" style="height:400px;">
+        </div>
+
+        <div class="w3-twothird">
+            <div class="w3-margin-left" style="margin-top:10px">
+                <form action="{{ url_for('register') }}", method="post">
+                    <p class="w3-left-align w3-large"><b>Username:</b></p>
+                    <input class="alert alert-light w3-border" style="width:300px" type="text" name="un" placeholder="Username">
+                    <p class="w3-left-align w3-large"><b>Password:</b></p>
+                    <input class="alert alert-light w3-border" style="width:300px" type="Password" name="pass" placeholder="Password"><br>
+                    <p class="w3-left-align w3-large"><b>Comfirm Password:</b></p>
+                    <input class="alert alert-light w3-border" style="width:300px" type="Password" name="pass-check" placeholder="Comfirm Your Password"><br>
+                    <p class="w3-left-align w3-large"><b>Email:</b></p>
+                    <input class="alert alert-light w3-border" style="width:300px" type="text" name="email" placeholder="(optional)">
+                    <div class="w3-row">
+                        <button class="w3-half btn btn-dark w3-large w3-margin-top w3-margin-right" style="width:100px" type="submit">Sign up</button>
+                        {% with messages = get_flashed_messages() %}
+                            {% if messages %}
+                                {% for message in messages %}
+                                    <h4 class="w3-half text-monospace text-danger w3-margin-top"><b>{{ message }}</b></h4>
+                                {% endfor %}
+                            {% endif %}
+                        {% endwith %}
+                    </div>
+
+                </form>
+            </div>
+        </div>
+    </div>
+{% endblock %}

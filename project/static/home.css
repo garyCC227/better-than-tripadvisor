@@ -1,0 +1,49 @@
+
+body,h1,h2,h3,h4,h5,h6 {font-family: "Raleway", Arial, Helvetica, sans-serif}
+.myLink {display: none}
+
+.whereTo{
+    font-size: 40px;
+    font-weight: bold;
+}
+
+.tooltip {
+  display: inline-block;
+  border-bottom: 1px dotted black;
+}
+
+.tooltip .tooltiptext {
+  visibility: hidden;
+  width: 120px;
+  background-color: black;
+  color: #fff;
+  text-align: center;
+  border-radius: 6px;
+  padding: 5px 0;
+
+  /* Position the tooltip */
+  position: absolute;
+  z-index: 1;
+}
+
+.tooltip:hover .tooltiptext {
+  visibility: visible;
+}
+
+#search_bar {
+  padding: 3em !important;
+}
+
+#flight {
+    padding: 3em !important;
+}
+
+#find_more{
+    transition: all .2s ease-in-out !important;
+    text-decoration: line-through !important;
+    padding: 3em !important;
+}
+
+#find_more:hover{
+    transform: scale(1.1) !important;
+}

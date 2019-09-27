@@ -1,0 +1,498 @@
+{% extends "base.html" %}
+
+
+{% block title %} <title>Profile</title>{% endblock %}
+
+{% block content %}
+<style>
+html
+{
+   font-size: 1.02em ;
+}
+</style>
+
+<script>
+function allowDrop(ev) {
+  ev.preventDefault();
+}
+
+function drag(ev) {
+  ev.dataTransfer.setData("text", ev.target.id);
+}
+
+function drop(ev) {
+    //get draging element
+    var data = ev.dataTransfer.getData("text");
+    var place = document.getElementById(data);
+
+    //get target element
+    var cell = ev.target;
+
+    //new cell != old cell && cell is empty
+    if (place.id != cell.id && cell.textContent == ""){
+        //console.log(ev.target);
+        cell.innerHTML = place.textContent;
+        cell.className += place.className;
+        cell.draggable = true;
+        cell.addEventListener('click', show);
+        cell.addEventListener('dragstart', drag);
+
+
+        // get all the box id in bank
+        var bank = [];
+        var x = document.getElementById('bank').children; //get all the row in bank, inside each row, there will be the destination box
+        for(var i=0; i < x.length; i++){
+            var temp = x[i].children
+            //console.log(x[i]);
+            bank.push(temp[1].id)
+        }
+
+        //do this, since we dont want to remove box in bank, when we just drag it out
+        if(!bank.includes(place.id)){
+            //store the address, get the address from drag box
+            var draging_child = place.children;
+            draging_child[0].name = cell.id;
+            cell.appendChild(draging_child[0]);
+            // so the format we store name & address in this input is :    name,
+            //above code: just want pass the child from a cell to a cell.
+
+
+            place.textContent = ""; //reset the start box
+            place.className = "";
+            place.draggable= false;
+
+
+        }else{
+            //if we drag a place from bank to table cell, set the value as place, address
+
+            //store place_name, address to the cell box
+            //store the place name;
+            var place_info = document.createElement('input');
+            var place_name = place.textContent;
+            place_info.style.display = "none";
+            place_info.name = cell.id;
+            //store the address, get the address from drag box
+            var draging_child = place.children;
+            var address = draging_child[0].value;
+            place_info.value = place_name + "=="+ address;
+            cell.appendChild(place_info);
+            // so the format we store name & address in this input is :    name,
+        }
+    }
+
+}
+function show(ev){
+    console.log(ev.target)
+}
+
+function Deleteblock(ev) {
+    //get target element
+    var cell = ev.target;
+    //replace innerHTML and className to empty string
+    cell.innerHTML = "";
+    cell.className = "";
+    delete cell.id;
+}
+
+var scrollBox = $("#scroll-box");
+
+</script>
+<script src="//code.jquery.com/jquery-1.11.1.min.js"></script>
+<!------ Include the above in your HEAD tag ---------->
+
+<br><br>
+<div class="w3-content " style="margin-top:50px">
+	<header class="w3-container w3-center w3-border-bottom w3-padding-48 w3-white">
+		<div class="w3-quarter w3-border-right" >
+		    <img src="/static/style/bg5.jpg" class="img-circle" style="width:100px; height:100px">
+        </div>
+
+        <div class="twothird">
+			<div class="w3-half w3-left-align" style="margin-left:16px;margin-top:16px">
+				<h2 class=" text-monospace text-dark"><b>{{info['name']}}</b></h2><br>
+				<h3 class="text-monospace text-secondary">{{info['email']}}</h3>
+			</div>
+			<div class="btn-group w3-right" style="margin-right:30px">
+                <a class="btn dropdown-toggle btn-info w3-medium" data-toggle="dropdown">
+                    Setting
+                </a>
+                <ul class="dropdown-menu">
+                    <li><a href="/edit_profile"><span class="icon-wrench"></span> Modify profile</a></li>
+                </ul>
+            </div>
+        </div>
+	</header>
+	<!--table content-->
+
+
+
+
+
+	<div class="w3-container w3-margin-top w3-card w3-white w3-margin-bottom" style="height:1500px;">
+		<header class="w3-margin-top w3-display-container">
+            <div class="w3-container">
+                <span class="w3-xxlarge" style="font-family:Arial">Timetable</span>
+                <button type="submit" form="table"  class="w3-margin-left w3-right btn btn-success w3-large">
+    					Generate
+    			</button>
+                <!-- tranport  -->
+                <div class="btn-group w3-right">
+                    <button id="transport" type="button" class="btn btn-outline-white w3-border w3-large" style="font-family:Arial">Driving</button>
+                    <button type="button" class="btn btn-outline-white w3-border dropdown-toggle dropdown-toggle-split" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
+                        <span class="sr-only">Toggle Dropdown</span>
+                    </button>
+                    <div class="dropdown-menu w3-right" style="font-family:Arial">
+                        <a class="dropdown-item" onclick="change_transport('driving')" >Driving</a>
+                        <a class="dropdown-item" onclick="change_transport('walking')">Walking</a>
+                        <a class="dropdown-item" onclick="change_transport('bus')">Bus</a>
+                        <a class="dropdown-item" onclick="change_transport('train')">Train</a>
+                    </div>
+                </div>
+                <!-- end transport -->
+                <script type="text/javascript">
+                    function change_transport(ts_type){
+                        var ts_input = document.getElementById('transport-input');
+                        var ts_dropdown = document.getElementById('transport');
+
+                        ts_input.value = ts_type;
+                        ts_dropdown.textContent = ts_type[0].toUpperCase() + ts_type.slice(1);
+                        console.log(ts_input.value);
+                    }
+                </script>
+            </div>
+
+		</header><hr>
+		<style>
+			th, td{
+				border:2px solid grey !important;
+			}
+            tr{
+                max-height:120px;
+                max-width:100px
+            }
+			td{
+				min-width:120px !important;
+				font-style:bold !important;
+				font-size: 10px;
+                height:85px;
+				min-height:60px !important;
+			}
+
+		</style>
+        <script type="text/javascript">
+            function show_timetable(table){
+                var ran_class = [" w3-blue", " w3-red", " w3-orange", " w3-green", " w3-yellow", " w3-purple", " w3-aqua", " w3-pink", " w3-amber", " w3-teal"];
+                Object.entries(table).forEach(entry => {
+                    let wk_day = entry[0];
+                    let time_data = entry[1];
+
+
+                    Object.entries(time_data).forEach(entry => {
+                        let time = entry[0];
+                        let evt_data = entry[1];
+                        //skip key "date"
+                        if(time == 'date'){return}
+
+                        //add to cell now - using wk_day, time, place_name, address.
+                        let place_name = evt_data['name'];
+                        let address = evt_data['address'];
+                        var cell = document.getElementById(wk_day+'-'+time)
+
+                        cell.innerHTML = place_name;//text content
+                        cell.className = 'w3-medium w3-margin-bottom w3-center '; //class
+                        cell.className += ran_class[Math.floor(Math.random() * ran_class.length)]; //color class
+                        cell.draggable = true; //javascript events
+                        cell.addEventListener('click', show);//javascript events
+                        cell.addEventListener('dragstart', drag);//javascript events
+
+                        //add cell hidden data
+                        var place_info = document.createElement('input');
+                        place_info.style.display = "none";
+                        place_info.name = cell.id;
+                        place_info.value = place_name + "=="+ address;
+                        cell.appendChild(place_info);
+                    });
+
+                });
+
+            }
+        </script>
+    <form id="table" action="{{ url_for('generate') }}" method="post">
+        <!-- transport type --> <!--default set to driving-->
+        <input id="transport-input" type="text" name="transport-type" value="driving" style="display:none">
+        <table class="w3-table w3-margin-top">
+		{% if key == "none" %}
+			<tr>
+				<th></th>
+				<th><big>MON</big> </th>
+				<th><big>TUE</big> </th>
+				<th><big>WED</big> </th>
+				<th><big>THU</big> </th>
+				<th><big>FRI</big> </th>
+				<th><big>SAT</big> </th>
+				<th><big>SUN</big> </th>
+			</tr>
+		{% else %}
+        <body onload="show_timetable({{info['timetable'][key]}} )">
+        <input type="text" name="start-day" value="{{ key }}" style="display:none">
+			<tr>
+				<th></th>
+				<th><big>MON</big> <br><small>{{info['timetable'][key]['Mon']['date']}}</small></th>
+				<th><big>TUE</big> <br><small>{{info['timetable'][key]['Tue']['date']}}</small></th>
+				<th><big>WED</big> <br><small>{{info['timetable'][key]['Wed']['date']}}</small></th>
+				<th><big>THU</big> <br><small>{{info['timetable'][key]['Thu']['date']}}</small></th>
+				<th><big>FRI</big> <br><small>{{info['timetable'][key]['Fri']['date']}}</small></th>
+				<th><big>SAT</big> <br><small>{{info['timetable'][key]['Sat']['date']}}</small></th>
+				<th><big>SUN</big> <br><small>{{info['timetable'][key]['Sun']['date']}}</small></th>
+			</tr>
+		{% endif %}
+
+			<tr>
+				<td style="width:20px;font-size: 1.05em">9:00am</td>
+				<td id="Mon-9"  ondrop="drop(event)"  ondragover="allowDrop(event)"ondblclick="Deleteblock(event)" position="absolute"></td>
+				<td id="Tue-9"  ondrop="drop(event)" ondragover="allowDrop(event)" ondblclick="Deleteblock(event)" position="absolute"></td>
+				<td id="Wed-9"  ondrop="drop(event)" ondragover="allowDrop(event)" ondblclick="Deleteblock(event)" position="absolute"></td>
+				<td id="Thu-9" ondrop="drop(event)" ondragover="allowDrop(event)"  ondblclick="Deleteblock(event)" position="absolute"></td>
+				<td id="Fri-9" ondrop="drop(event)"  ondragover="allowDrop(event)" ondblclick="Deleteblock(event)" position="absolute"></td>
+				<td id="Sat-9"  ondrop="drop(event)" ondragover="allowDrop(event)" ondblclick="Deleteblock(event)" position="absolute"></td>
+				<td id="Sun-9"  ondrop="drop(event)" ondragover="allowDrop(event)" ondblclick="Deleteblock(event)" position="absolute"></td>
+
+
+			</tr>
+			<tr >
+				<td style="font-size: 1.05em">10:00am</td>
+                <td id="Mon-10"  ondrop="drop(event)"  ondragover="allowDrop(event)"ondblclick="Deleteblock(event)" position="absolute"></td>
+				<td id="Tue-10"  ondrop="drop(event)" ondragover="allowDrop(event)" ondblclick="Deleteblock(event)" position="absolute"></td>
+				<td id="Wed-10"  ondrop="drop(event)" ondragover="allowDrop(event)" ondblclick="Deleteblock(event)" position="absolute"></td>
+				<td id="Thu-10" ondrop="drop(event)" ondragover="allowDrop(event)"  ondblclick="Deleteblock(event)" position="absolute"></td>
+				<td id="Fri-10" ondrop="drop(event)"  ondragover="allowDrop(event)" ondblclick="Deleteblock(event)" position="absolute"></td>
+				<td id="Sat-10"  ondrop="drop(event)" ondragover="allowDrop(event)" ondblclick="Deleteblock(event)" position="absolute"></td>
+				<td id="Sun-10"  ondrop="drop(event)" ondragover="allowDrop(event)" ondblclick="Deleteblock(event)" position="absolute"></td>
+
+			</tr>
+
+            <tr >
+                <td style="font-size: 1.05em">11:00am</td>
+                <td id="Mon-11"  ondrop="drop(event)"  ondragover="allowDrop(event)"ondblclick="Deleteblock(event)" position="absolute"></td>
+				<td id="Tue-11"  ondrop="drop(event)" ondragover="allowDrop(event)" ondblclick="Deleteblock(event)" position="absolute"></td>
+				<td id="Wed-11"  ondrop="drop(event)" ondragover="allowDrop(event)" ondblclick="Deleteblock(event)" position="absolute"></td>
+				<td id="Thu-11" ondrop="drop(event)" ondragover="allowDrop(event)"  ondblclick="Deleteblock(event)" position="absolute"></td>
+				<td id="Fri-11" ondrop="drop(event)"  ondragover="allowDrop(event)" ondblclick="Deleteblock(event)" position="absolute"></td>
+				<td id="Sat-11"  ondrop="drop(event)" ondragover="allowDrop(event)" ondblclick="Deleteblock(event)" position="absolute"></td>
+				<td id="Sun-11"  ondrop="drop(event)" ondragover="allowDrop(event)" ondblclick="Deleteblock(event)" position="absolute"></td>
+
+            </tr>
+
+            <tr >
+                <td style="font-size: 1.05em">12:00pm</td>
+                <td id="Mon-12"  ondrop="drop(event)"  ondragover="allowDrop(event)"ondblclick="Deleteblock(event)" position="absolute"></td>
+				<td id="Tue-12"  ondrop="drop(event)" ondragover="allowDrop(event)" ondblclick="Deleteblock(event)" position="absolute"></td>
+				<td id="Wed-12"  ondrop="drop(event)" ondragover="allowDrop(event)" ondblclick="Deleteblock(event)" position="absolute"></td>
+				<td id="Thu-12" ondrop="drop(event)" ondragover="allowDrop(event)"  ondblclick="Deleteblock(event)" position="absolute"></td>
+				<td id="Fri-12" ondrop="drop(event)"  ondragover="allowDrop(event)" ondblclick="Deleteblock(event)" position="absolute"></td>
+				<td id="Sat-12"  ondrop="drop(event)" ondragover="allowDrop(event)" ondblclick="Deleteblock(event)" position="absolute"></td>
+				<td id="Sun-12"  ondrop="drop(event)" ondragover="allowDrop(event)" ondblclick="Deleteblock(event)" position="absolute"></td>
+
+            </tr>
+
+            <tr >
+                <td style="font-size: 1.05em">1:00pm</td>
+                <td id="Mon-13"  ondrop="drop(event)"  ondragover="allowDrop(event)"ondblclick="Deleteblock(event)" position="absolute"></td>
+				<td id="Tue-13"  ondrop="drop(event)" ondragover="allowDrop(event)" ondblclick="Deleteblock(event)" position="absolute"></td>
+				<td id="Wed-13"  ondrop="drop(event)" ondragover="allowDrop(event)" ondblclick="Deleteblock(event)" position="absolute"></td>
+				<td id="Thu-13" ondrop="drop(event)" ondragover="allowDrop(event)"  ondblclick="Deleteblock(event)" position="absolute"></td>
+				<td id="Fri-13" ondrop="drop(event)"  ondragover="allowDrop(event)" ondblclick="Deleteblock(event)" position="absolute"></td>
+				<td id="Sat-13"  ondrop="drop(event)" ondragover="allowDrop(event)" ondblclick="Deleteblock(event)" position="absolute"></td>
+				<td id="Sun-13"  ondrop="drop(event)" ondragover="allowDrop(event)" ondblclick="Deleteblock(event)" position="absolute"></td>
+
+            </tr>
+
+            <tr >
+                <td style="font-size: 1.05em">2:00pm</td>
+                <td id="Mon-14"  ondrop="drop(event)"  ondragover="allowDrop(event)"ondblclick="Deleteblock(event)" position="absolute"></td>
+				<td id="Tue-14"  ondrop="drop(event)" ondragover="allowDrop(event)" ondblclick="Deleteblock(event)" position="absolute"></td>
+				<td id="Wed-14"  ondrop="drop(event)" ondragover="allowDrop(event)" ondblclick="Deleteblock(event)" position="absolute"></td>
+				<td id="Thu-14" ondrop="drop(event)" ondragover="allowDrop(event)"  ondblclick="Deleteblock(event)" position="absolute"></td>
+				<td id="Fri-14" ondrop="drop(event)"  ondragover="allowDrop(event)" ondblclick="Deleteblock(event)" position="absolute"></td>
+				<td id="Sat-14"  ondrop="drop(event)" ondragover="allowDrop(event)" ondblclick="Deleteblock(event)" position="absolute"></td>
+				<td id="Sun-14"  ondrop="drop(event)" ondragover="allowDrop(event)" ondblclick="Deleteblock(event)" position="absolute"></td>
+
+            </tr>
+
+            <tr >
+                <td style="font-size: 1.05em">3:00pm</td>
+                <td id="Mon-15"  ondrop="drop(event)"  ondragover="allowDrop(event)"ondblclick="Deleteblock(event)" position="absolute"></td>
+				<td id="Tue-15"  ondrop="drop(event)" ondragover="allowDrop(event)" ondblclick="Deleteblock(event)" position="absolute"></td>
+				<td id="Wed-15"  ondrop="drop(event)" ondragover="allowDrop(event)" ondblclick="Deleteblock(event)" position="absolute"></td>
+				<td id="Thu-15" ondrop="drop(event)" ondragover="allowDrop(event)"  ondblclick="Deleteblock(event)" position="absolute"></td>
+				<td id="Fri-15" ondrop="drop(event)"  ondragover="allowDrop(event)" ondblclick="Deleteblock(event)" position="absolute"></td>
+				<td id="Sat-15"  ondrop="drop(event)" ondragover="allowDrop(event)" ondblclick="Deleteblock(event)" position="absolute"></td>
+				<td id="Sun-15"  ondrop="drop(event)" ondragover="allowDrop(event)" ondblclick="Deleteblock(event)" position="absolute"></td>
+
+            </tr>
+
+            <tr >
+                <td style="font-size: 1.05em">4:00pm</td>
+                <td id="Mon-16"  ondrop="drop(event)"  ondragover="allowDrop(event)"ondblclick="Deleteblock(event)" position="absolute"></td>
+				<td id="Tue-16"  ondrop="drop(event)" ondragover="allowDrop(event)" ondblclick="Deleteblock(event)" position="absolute"></td>
+				<td id="Wed-16"  ondrop="drop(event)" ondragover="allowDrop(event)" ondblclick="Deleteblock(event)" position="absolute"></td>
+				<td id="Thu-16" ondrop="drop(event)" ondragover="allowDrop(event)"  ondblclick="Deleteblock(event)" position="absolute"></td>
+				<td id="Fri-16" ondrop="drop(event)"  ondragover="allowDrop(event)" ondblclick="Deleteblock(event)" position="absolute"></td>
+				<td id="Sat-16"  ondrop="drop(event)" ondragover="allowDrop(event)" ondblclick="Deleteblock(event)" position="absolute"></td>
+				<td id="Sun-16"  ondrop="drop(event)" ondragover="allowDrop(event)" ondblclick="Deleteblock(event)" position="absolute"></td>
+
+            </tr>
+
+            <tr >
+                <td style="font-size: 1.05em">5:00pm</td>
+                <td id="Mon-17"  ondrop="drop(event)"  ondragover="allowDrop(event)"ondblclick="Deleteblock(event)" position="absolute"></td>
+				<td id="Tue-17"  ondrop="drop(event)" ondragover="allowDrop(event)" ondblclick="Deleteblock(event)" position="absolute"></td>
+				<td id="Wed-17"  ondrop="drop(event)" ondragover="allowDrop(event)" ondblclick="Deleteblock(event)" position="absolute"></td>
+				<td id="Thu-17" ondrop="drop(event)" ondragover="allowDrop(event)"  ondblclick="Deleteblock(event)" position="absolute"></td>
+				<td id="Fri-17" ondrop="drop(event)"  ondragover="allowDrop(event)" ondblclick="Deleteblock(event)" position="absolute"></td>
+				<td id="Sat-17"  ondrop="drop(event)" ondragover="allowDrop(event)" ondblclick="Deleteblock(event)" position="absolute"></td>
+				<td id="Sun-17"  ondrop="drop(event)" ondragover="allowDrop(event)" ondblclick="Deleteblock(event)" position="absolute"></td>
+
+            </tr>
+
+            <tr >
+                <td style="font-size: 1.05em">6:00pm</td>
+                <td id="Mon-18"  ondrop="drop(event)"  ondragover="allowDrop(event)"ondblclick="Deleteblock(event)" position="absolute"></td>
+				<td id="Tue-18"  ondrop="drop(event)" ondragover="allowDrop(event)" ondblclick="Deleteblock(event)" position="absolute"></td>
+				<td id="Wed-18"  ondrop="drop(event)" ondragover="allowDrop(event)" ondblclick="Deleteblock(event)" position="absolute"></td>
+				<td id="Thu-18" ondrop="drop(event)" ondragover="allowDrop(event)"  ondblclick="Deleteblock(event)" position="absolute"></td>
+				<td id="Fri-18" ondrop="drop(event)"  ondragover="allowDrop(event)" ondblclick="Deleteblock(event)" position="absolute"></td>
+				<td id="Sat-18"  ondrop="drop(event)" ondragover="allowDrop(event)" ondblclick="Deleteblock(event)" position="absolute"></td>
+				<td id="Sun-18"  ondrop="drop(event)" ondragover="allowDrop(event)" ondblclick="Deleteblock(event)" position="absolute"></td>
+
+            </tr>
+
+            <tr >
+                <td style="font-size: 1.05em">7:00pm</td>
+                <td id="Mon-19"  ondrop="drop(event)"  ondragover="allowDrop(event)"ondblclick="Deleteblock(event)" position="absolute"></td>
+				<td id="Tue-19"  ondrop="drop(event)" ondragover="allowDrop(event)" ondblclick="Deleteblock(event)" position="absolute"></td>
+				<td id="Wed-19"  ondrop="drop(event)" ondragover="allowDrop(event)" ondblclick="Deleteblock(event)" position="absolute"></td>
+				<td id="Thu-19" ondrop="drop(event)" ondragover="allowDrop(event)"  ondblclick="Deleteblock(event)" position="absolute"></td>
+				<td id="Fri-19" ondrop="drop(event)"  ondragover="allowDrop(event)" ondblclick="Deleteblock(event)" position="absolute"></td>
+				<td id="Sat-19"  ondrop="drop(event)" ondragover="allowDrop(event)" ondblclick="Deleteblock(event)" position="absolute"></td>
+				<td id="Sun-19"  ondrop="drop(event)" ondragover="allowDrop(event)" ondblclick="Deleteblock(event)" position="absolute"></td>
+
+            </tr>
+
+            <tr >
+                <td style="font-size: 1.05em">8:00pm</td>
+                <td id="Mon-20"  ondrop="drop(event)"  ondragover="allowDrop(event)"ondblclick="Deleteblock(event)" position="absolute"></td>
+				<td id="Tue-20"  ondrop="drop(event)" ondragover="allowDrop(event)" ondblclick="Deleteblock(event)" position="absolute"></td>
+				<td id="Wed-20"  ondrop="drop(event)" ondragover="allowDrop(event)" ondblclick="Deleteblock(event)" position="absolute"></td>
+				<td id="Thu-20" ondrop="drop(event)" ondragover="allowDrop(event)"  ondblclick="Deleteblock(event)" position="absolute"></td>
+				<td id="Fri-20" ondrop="drop(event)"  ondragover="allowDrop(event)" ondblclick="Deleteblock(event)" position="absolute"></td>
+				<td id="Sat-20"  ondrop="drop(event)" ondragover="allowDrop(event)" ondblclick="Deleteblock(event)" position="absolute"></td>
+				<td id="Sun-20"  ondrop="drop(event)" ondragover="allowDrop(event)" ondblclick="Deleteblock(event)" position="absolute"></td>
+
+            </tr>
+
+            <tr >
+                <td style="font-size: 1.05em">9:00pm</td>
+                <td id="Mon-21"  ondrop="drop(event)"  ondragover="allowDrop(event)"ondblclick="Deleteblock(event)" position="absolute"></td>
+				<td id="Tue-21"  ondrop="drop(event)" ondragover="allowDrop(event)" ondblclick="Deleteblock(event)" position="absolute"></td>
+				<td id="Wed-21"  ondrop="drop(event)" ondragover="allowDrop(event)" ondblclick="Deleteblock(event)" position="absolute"></td>
+				<td id="Thu-21" ondrop="drop(event)" ondragover="allowDrop(event)"  ondblclick="Deleteblock(event)" position="absolute"></td>
+				<td id="Fri-21" ondrop="drop(event)"  ondragover="allowDrop(event)" ondblclick="Deleteblock(event)" position="absolute"></td>
+				<td id="Sat-21"  ondrop="drop(event)" ondragover="allowDrop(event)" ondblclick="Deleteblock(event)" position="absolute"></td>
+				<td id="Sun-21"  ondrop="drop(event)" ondragover="allowDrop(event)" ondblclick="Deleteblock(event)" position="absolute"></td>
+
+            </tr>
+
+            <tr >
+                <td style="font-size: 1.05em">10:00pm</td>
+                <td id="Mon-22"  ondrop="drop(event)"  ondragover="allowDrop(event)"ondblclick="Deleteblock(event)" position="absolute"></td>
+				<td id="Tue-22"  ondrop="drop(event)" ondragover="allowDrop(event)" ondblclick="Deleteblock(event)" position="absolute"></td>
+				<td id="Wed-22"  ondrop="drop(event)" ondragover="allowDrop(event)" ondblclick="Deleteblock(event)" position="absolute"></td>
+				<td id="Thu-22" ondrop="drop(event)" ondragover="allowDrop(event)"  ondblclick="Deleteblock(event)" position="absolute"></td>
+				<td id="Fri-22" ondrop="drop(event)"  ondragover="allowDrop(event)" ondblclick="Deleteblock(event)" position="absolute"></td>
+				<td id="Sat-22"  ondrop="drop(event)" ondragover="allowDrop(event)" ondblclick="Deleteblock(event)" position="absolute"></td>
+				<td id="Sun-22"  ondrop="drop(event)" ondragover="allowDrop(event)" ondblclick="Deleteblock(event)" position="absolute"></td>
+
+            </tr>
+
+            <tr >
+                <td style="font-size: 1.05em">11:00pm</td>
+                <td id="Mon-23"  ondrop="drop(event)"  ondragover="allowDrop(event)"ondblclick="Deleteblock(event)" position="absolute"></td>
+				<td id="Tue-23"  ondrop="drop(event)" ondragover="allowDrop(event)" ondblclick="Deleteblock(event)" position="absolute"></td>
+				<td id="Wed-23"  ondrop="drop(event)" ondragover="allowDrop(event)" ondblclick="Deleteblock(event)" position="absolute"></td>
+				<td id="Thu-23" ondrop="drop(event)" ondragover="allowDrop(event)"  ondblclick="Deleteblock(event)" position="absolute"></td>
+				<td id="Fri-23" ondrop="drop(event)"  ondragover="allowDrop(event)" ondblclick="Deleteblock(event)" position="absolute"></td>
+				<td id="Sat-23"  ondrop="drop(event)" ondragover="allowDrop(event)" ondblclick="Deleteblock(event)" position="absolute"></td>
+				<td id="Sun-23"  ondrop="drop(event)" ondragover="allowDrop(event)" ondblclick="Deleteblock(event)" position="absolute"></td>
+
+            </tr>
+        <!-- end loop cell id -->
+		</table>
+    </form>
+
+	</div>
+	<!--end table content-->
+</div>
+
+<div class="w3-display-left" style="position:absolute; margin-left:30px;margin-top:200px !important">
+	<div class="w3-container w3-card w3-white" style="width:270px;; height:200px;" ondrop="drop(event)" ondragover="allowDrop(event)">
+		<h3 class="w3-margin-top"><b>Pick a Week</b></h3><hr>
+		<form action="{{url_for('get_date')}}", method="POST">
+		<input class="form-control input-lg" type=date name='start_date' value={{default_date}}>
+		<input style='margin-top: 10%' type=submit class='w3-left btn btn-success w3-medium' value='Get Timetable'>
+		</form>
+
+	</div>
+
+    <!-- timetable generate reminder -->
+    <div class="w3-container w3-card w3-white" style="width:300px; height:auto;margin-top:30px;">
+        <i class="glyphicon glyphicon-exclamation-sign text-primary w3-xlarge w3-margin-top"><b class="text-dark" style="margin-left:5px;">Reminder</b></i><hr>
+            {% with messages = get_flashed_messages() %}
+                {% if messages %}
+                    {% if messages | length == 1 and 'Valid' in messages[0] %}
+                            <h5 style="font-family:Arial"><span class="text-success w3-large">{{ messages[0] }}</span></h5>
+                    {% else %}
+                        {% for message in messages %}
+                            <h5 style="font-family:Arial">{{loop.index}}: <span class="text-danger w3-small w3-opacity-min">{{ message |safe }}</span></h5>
+                        {% endfor %}
+                    {% endif %}
+                {% endif %}
+            {% endwith %}
+     <span style="margin-top:10px"></span> </div>
+</div>
+
+<div class="w3-display-right" style="position:fixed; margin-right:70px;margin-bottom:30px">
+	<div class="w3-container w3-card w3-white" ondrop="drop(event)" ondragover="allowDrop(event)" >
+		<h2 class="w3-margin-top"><b>Bank</b></h2><hr>
+		<div class="container" id="bank" style="max-height: 500px;overflow:auto">
+			{% if info['bank'] | length > 0 %}
+			{% for place_key, address in info['bank'].items() %}
+			<div class="row">
+                <form action="{{ url_for('delete_bank') }}" method="post">
+                    <button id="delete" type="submit" class="close w3-xlarge" style="margin-right:5px;margin-top:20px;" name="delete_place" value="{{place_key}}" >&times;</button>
+                </form>
+                <div id="drag{{ loop.index }}" class="colors w3-medium w3-margin-bottom w3-center" onclick="show(event)" draggable="true" ondragstart="drag(event)" style="width: 90%;padding: 5px;margin-right: 5px;width:120px;min-height:70px;">{{place_key}}<input type="text" style="display:none" value="{{address}}"></div>
+			</div>
+			{% endfor %}
+			{% endif %}
+		</div>
+	</div>
+</div>
+  <script type="text/javascript">
+
+      ran_col()
+      function ran_col(){
+          var ran_class = [" w3-blue", " w3-red", " w3-orange", " w3-green", " w3-yellow", " w3-purple", " w3-aqua", " w3-pink", " w3-amber", " w3-teal"];
+          var class_ = ran_class[0];
+          bank = document.getElementsByClassName('colors')
+          for(var i=0;i<bank.length;i++){
+              bank[i].className += ran_class[Math.floor(Math.random() * ran_class.length)]
+          }
+      }
+  </script>
+</div>
+
+
+
+
+{% endblock %}

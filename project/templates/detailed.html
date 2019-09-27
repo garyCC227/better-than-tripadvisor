@@ -1,0 +1,276 @@
+{% extends "base.html" %}
+
+{% block title %}<title>Details</title> {% endblock %}
+
+{% block content %}
+
+{% if results %}
+<!--place name , picture, address-->
+<div class="w3-content" style="margin-top:20px;max-width:1400px;height:500px">
+    <header class="w3-container w3-center w3-border-bottom w3-padding-48">
+        <style>
+        div.rightInfo{
+            float: right;
+            width: 35%;
+            height:500px;
+            margin-right:40px;
+        }
+        </style>
+        <!-- place detail-->
+        <div class="rightInfo w3-white" >
+            <div class="w3-container w3-center text-monospace" style="margin-top:200px">
+                <h2 class="w3-xxlarge w3-text-red w3-opacity-min "><b>{{ results['google']['name'] }}</b></h2>
+                <h4 class="w3-opacity w3-text-grey w3-center">{{ results['type'] }}</h4>
+                <h4 class="w3-margin-top text-dark w3-opacity-min"><i class="fas fa-map-marker-alt w3-text-blue"></i> <b>{{ results['google']['formatted_address'] }}</b></h4>
+                <br><br><br><br>
+                <form action="{{url_for('add_to_bank', place_name = results['google']['name'])}}" method="post">
+                    <input style="display:none" name="address" value="{{ results['google']['formatted_address'] }}">
+                    <input  name="place_id" style="display:none" value="{{ results ['uuid']}}">
+                    <button type="submit" name="add_bank" value="{{ results['google']['name'] }}" class="btn btn-success w3-large" style="margin-top:5px;margin-bottom: 1%;padding:5px;z-index: 100;"> Add To Timetable</button>
+                </form>
+            </div>
+        </div>
+        <!-- end of place detail-->
+
+        <style>
+        .mySlides {display:none;}
+        .w3-left, .w3-right, .w3-badge {cursor:pointer}
+        .w3-badge {height:15px;width:15px;padding:0}
+        .picSlide{
+            width: 62%;
+        }
+
+        </style>
+
+        <!--place photos-->
+        <div class="w3-col w3-display-container picSlide">
+        {% for photo in results['google']['photos']%}
+            <img class="mySlides w3-opacity-min" src="https://maps.googleapis.com/maps/api/place/photo?maxheight=1500&maxwidth=1500&photoreference={{photo['photo_reference']}}&key=AIzaSyDfcnfzhKYnQfsY8ggX7UpK_3Ajvb9d25M" style="width: 100%;max-height:500px;min-height:500px;">
+        {% endfor %}
+            <div class="w3-center w3-container w3-section w3-large w3-text-white w3-display-bottommiddle" style="width:100%;z-index:100">
+                <div class="w3-left w3-hover-text-khaki" onclick="plusDivs(-1)">&#10094;</div>
+                <div class="w3-right w3-hover-text-khaki" onclick="plusDivs(1)">&#10095;</div>
+                <span class="w3-badge demo w3-border w3-transparent w3-hover-white" onclick="currentDiv(1)"></span>
+                <span class="w3-badge demo w3-border w3-transparent w3-hover-white" onclick="currentDiv(2)"></span>
+                <span class="w3-badge demo w3-border w3-transparent w3-hover-white" onclick="currentDiv(3)"></span>
+            </div>
+        </div>
+
+        <!--end place photos-->
+        <script>
+        var slideIndex = 1;
+        showDivs(slideIndex);
+
+        function plusDivs(n) {
+          showDivs(slideIndex += n);
+        }
+
+        function currentDiv(n) {
+          showDivs(slideIndex = n);
+        }
+
+        function showDivs(n) {
+          var i;
+          var x = document.getElementsByClassName("mySlides");
+          var dots = document.getElementsByClassName("demo");
+          if (n > x.length) {slideIndex = 1}
+          if (n < 1) {slideIndex = x.length}
+          for (i = 0; i < x.length; i++) {
+            x[i].style.display = "none";
+          }
+          for (i = 0; i < dots.length; i++) {
+            dots[i].className = dots[i].className.replace(" w3-white", "");
+          }
+          x[slideIndex-1].style.display = "block";
+          dots[slideIndex-1].className += " w3-white";
+        }
+        </script>
+    </header>
+    <!--end of the header detail-->
+</div>
+
+
+<!-- detail  -->
+<div class="w3-content w3-display-container w3-row" style="padding:5px;max-width:1100px;">
+        <!--start of more detail-->
+            <!-- left content -->
+            <div class="w3-col w3-white w3-display-container w3-card" style="margin-top: 25px;min-height:320px;width:30%"><br>
+                <div class="w3-container">
+                    <h2 class="w3-center"><i class="fas fa-book-reader text-info "></i>  <b class="w3-opacity-min">About</b></h2>
+                    <p class="w3-medium w3-opacity-min" style="font-family:Arial"> {{ results['description'] }}</p>
+
+                </div>
+            </div>
+            <!-- middle content -->
+            <div class="w3-col w3-white w3-card w3-display-container" style="margin-left: 15px;margin-top: 25px;height:320px;width:40%"><br><br>
+                <div class="w3-col w3-container" style="width:50%;font-family:Arial">
+                    <h4 style="font-family:Arial"> <i class="fas fa-map-marker-alt w3-text-red"></i> <b>Address:</b></h4> <h5>{{ results['google']['formatted_address'] }}</h5><br>
+                    <h4 style="font-family:Arial"><i class="fa fa-mobile-phone w3-text-red"></i> <b>Phone Number:</b></h4> <h4>{% if 'formatted_phone_number' in results['google'].keys() %} {{ results['google']['formatted_phone_number'] }} {% else %}<i class="fas fa-times w3-text-red"></i> <i class="fas fa-times w3-text-red"></i>  <i class="fas fa-times w3-text-red"></i>{% endif %}</h4><br>
+                    <h4 style="font-family:Arial"><i class="fas fa-award w3-text-red"></i> <b>Tourist Award:</b></h4> {% if 'Singapore Tourism Award' in results['tags'] %} <div class="w3-text-red w3-opacity-min"><i class="fas fa-trophy  w3-medium"></i> <i class="fas fa-trophy  w3-medium"></i> <i class="fas fa-trophy w3-medium"></i> </div> {% else %} <i class="fas fa-times w3-text-red"></i> {% endif %}<br><br>
+                    <h4 style="font-family:Arial"><i class="fas fa-bookmark w3-text-red"></i> <b>Rate:</b></h4> <h2 class="w3-text-red w3-opacity-min" style="font-family:Arial"><b>{{ results['rating'] }}</b></h2><br>
+                </div>
+
+                <div class="w3-container w3-col" style="width:45%;font-family:Arial">
+                    <h4><i class="fa fa-clock-o w3-text-red"></i> <b class="w3-opacity-min">Open Hours</b></h4><hr>
+                    {% if 'opening_hours' in results['google'].keys() %}
+                    {% if 'weekday_text' in results['google']['opening_hours'].keys() %}
+                    {% for hours in results['google']['opening_hours']['weekday_text'] %}
+                    <h6><b class="w3-opacity-min">{{hours}}</b></h6>
+                    {% endfor %}
+                    {% endif %}
+                    {% else %}
+                        <h4 ><b>All day</b></h4>
+                    {% endif %}
+                </div>
+            </div>
+
+            <!-- right contetn -->
+            <div class="w3-col w3-white w3-center w3-card" style="margin-left:15px;height:320px;width:23%;margin-top: 25px;"><br><br>
+                <div class="w3-container">
+                    <div class="mapouter"><div class="gmap_canvas"><iframe width="200" height="150" id="gmap_canvas" src="https://maps.google.com/maps?q={{ results['name'] }}&t=&z=13&ie=UTF8&iwloc=&output=embed" frameborder="0" scrolling="no" marginheight="0" marginwidth="0"></iframe><a href="https://www.emojilib.com"></a></div></div><br>
+                    <h5><i class="fas fa-envelope w3-text-red"></i> <b>Email:</b></h5> <a href="{{ results['officialEmail'] }}" class="text-primary"><h5 style="text-decoration:underline">{{ results['officialEmail'] }}</h5></a>
+                    <br>
+                    <h5><i class="fas fa-home w3-text-red"></i> <b>Website:</b></h5> <a href="{{ results['officialWebsite'] }}" class="text-primary"><h5 style="text-decoration:underline">Click here to their website</h5></a><br>
+                </div>
+            </div>
+        <!--end of more detail-->
+    {% endif %}
+</div>
+<!-- tags -->
+<div class="w3-display-container w3-content" style="height:auto;margin-top:10px;max-width:1200px">
+    <div class="w3-col" style="width:80%">
+        {% for tag in results['tags'] %}
+            <h2 class="colors w3-medium w3-button text-white w3-border-0 w3-round-xxlarge w3-hover-opacity" style="width:auto;margin-top:5px">{{ tag }}</h2>
+        {% endfor %}
+    </div>
+</div>
+<script type="text/javascript">
+
+    ran_col()
+    function ran_col(){
+        var ran_class = [" w3-blue", " w3-red", " w3-orange", " w3-green", " w3-yellow"];
+        var class_ = ran_class[0];
+        tags = document.getElementsByClassName('colors')
+        for(var i=0;i<tags.length;i++){
+            tags[i].className += ran_class[Math.floor(Math.random() * ran_class.length)]
+        }
+    }
+</script>
+<!-- end tags -->
+
+<hr class="w3-content">
+
+<!-- relevant event -->
+<div class="w3-display-right" style="position:absolute; margin-right:230px;margin-top:1180px;height:1200px;">
+	<div class="w3-container w3-card w3-white" style="width:300px;">
+		<h2 class="w3-margin-top"> <i class="far fa-eye text-info"></i> <b>Relevant Eevents</b></h2><hr>
+        {% for event in results['events'] %}
+        <!-- event box -->
+        <div class="w3-row w3-display-container" style="height:30%;margin-bottom:10px;">
+            <h3 class="w3-display-middle text-black w3-xlarge" style="opacity:1.0"><b>  {{event['name']}} </b></h3>
+            <form action="{{ url_for('show_event', event_name=event['name']) }}" method="post">
+                <button class="btn btn-outline-dark border-0 w3-round "  type="submit" name="event_data" value="{{event}}">
+                    <img src="https://tih-api.stb.gov.sg/media/v1/download/uuid/{{event['images'][0]['uuid']}}?apikey=BFqkp4V35i0fXflQav9OYnolQuEMLGAg" class="w3-image" style="opacity: 0.8;height:200px;width:100%">
+                </button>
+            </form>
+        </div>
+        <!-- end event box -->
+        {% endfor %}
+	</div>
+</div>
+<!-- end events -->
+
+<!-- reviews -->
+<div class="w3-display-container w3-row" style="max-width:1100px;margin-left:300px;min-height:950px;">
+    <!-- review content-->
+    <div class="w3-col w3-container w3-white" style="margin-top:20px;width:75%;">
+    <h1 class="w3-margin-top w3-margin-left w3-xlarge" style="font-family:Arial"> <i class="fas fa-highlighter text-info"></i> <b>Reviews </b></h><hr>
+        {% if 'reviews' in results['google'].keys() %}
+        {% for review in results['google']['reviews'] %}
+        <!--review box-->
+
+            <div class="w3-row w3-display-container w3-border w3-round-medium w3-card w3-white" style="min-width:700px;max-width:700px;padding:20px;margin:2% 2%">
+                <div class="w3-col" style="width:10%;margin-right:30px">
+                    <img src="{{review['profile_photo_url']}}" style="width:100%;height:70px;">
+                </div>
+                <div class="w3-col" style="width:70%" >
+                    <h4 style="font-family:Arial"><b> {{review['author_name']}}</b></h4>
+                    <h6 style="font-family:Arial" class="w3-text-grey"> {{review['relative_time_description']}}</h6>
+                    <p style="margin-top: 20px; font-size:15px" class=" w3-text-dark"><i class="w3-small w3-green w3-round-medium" style="padding:3px;">Rate:<b class=""> {{review['rating']}}</b></i> <i style="font-family:Arial;" class="w3-opacity-min">{{review['text']}}</i></p>
+                    <hr width="100px">
+                    <div class="w3-row">
+                        <a class="w3-col far fa-thumbs-up w3-border-0 w3-opacity-min w3-large myhover" style="width:10%"> <i class="w3-small" style="font-family:Arial">Like</i> </a>
+                        <a class="w3-col fa fa-comment-o w3-border-0 w3-opacity-min w3-large myhover" style="width:20%; margin-left:20px"> <i class="w3-small" style="font-family:Arial">Comment</i> </a>
+                    </div>
+                    <style >
+                        .myhover:hover{
+                            transform: scale(1,1.2);
+                        }
+                    </style>
+                </div>
+            </div><hr>
+        <!-- end of review box -->
+        {% endfor %}
+        {% endif %}
+    </div>
+</div>
+<!-- end of review content-->
+
+
+<style>
+div.clear{
+    clear: both;
+}
+</style>
+
+
+<!-- Suggested place to go content-->
+<div class="w3-container w3-margin-top w3-card w3-white w3-row" style="margin-left:180px;margin-right:180px">
+    <style>
+    div.clear{
+        clear: both;
+    }
+    </style>
+
+
+    <div class="clear w3-center">
+    <h2 class="Sans-serif" style="margin-top:10px;font-family:Arial"> <i class="far fa-smile-wink text-info"></i> <b>Suggested Places</b></h2>
+    <div class="w3-row-padding w3-center" >
+        {% if suggested_places %}
+        {% for place in suggested_places %}
+        <!-- suggested box -->
+        <div class="w3-quarter w3-display-container">
+            <!-- images -->
+            <form action="{{ url_for('show_detail_by_id') }}" method="post">
+                <button type="submit" name="place_id" value="{{place['uuid']}}" class="w3-container w3-border-0 w3-margin-bottom btn btn-outline-secondary" >
+                    <input type="text" name="category" value="{{ category }}" style="display:none">
+                    <input type="text" name="keyword" value="{{ keyword }}" style="display:none">
+                    {% if place['images']|length > 0 %}
+                    <img src="https://tih-api.stb.gov.sg/media/v1/download/uuid/{{ place['images'][0]['uuid'] }}?apikey=BFqkp4V35i0fXflQav9OYnolQuEMLGAg" style="opacity:0.8;width:100%;height:200px" >
+                    {% else %}
+                    <img src="/static/style/no_image.svg" style="width:100%;height:200px" >
+                    {% endif %}
+                </button>
+            </form>
+            <!-- text info -->
+            <h3 style="font-family:Arial"><b>{{ place['name']}}</b></h3>
+            <div class="w3-display-container w3-col" style="width:60%;margin-left:80px">
+                <i class="w3-left w3-medium w3-text-red" style="font-family:Arial"><b>Rate: {{ place['rating']}}</b></i>
+                <p class="w3-right w3-small w3-opacity-min" style="font-family:Arial;text-decoration:underline"> {{ place['tags'][0] }}</p>
+            </div>
+
+        </div>
+        <!-- suggested box -->
+        {% endfor %}
+        {% endif %}
+    </div>
+    </div>
+</div>
+
+<!-- end of Suggested place to go content-->
+<!-- Footer -->
+<footer class="w3-row w3-center w3-black text-monospace" style="margin-top:100px;padding:5px;background-color:#333">
+    <p class="w3-large">Powered by <a href="/home" target="_blank" class=" w3-large w3-hover-text-green">Better-than-tripadvisor</a></p>
+</footer>
+
+{% endblock %}

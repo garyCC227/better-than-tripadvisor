@@ -1,0 +1,243 @@
+{% extends "base.html" %}
+
+{% block title %} <title>Home</title> {% endblock %}
+
+{% block content %}
+    <!-- Home big background with big search bar -->
+    <header class="w3-display-container w3-content w3-hide-small" style="max-width:1800px">
+        <img class="w3-image w3-opacity-min" src="/static/style/sbg2.jfif" style="width:100%;max-height:800px">
+        <div class="w3-display-middle" style="width:65%">
+            <div  class="w3-bar bg-transparent">
+                <button id="search_bar" class="btn btn-light text-info w3-round-medium shadow-lg p-3 mb-5 rounded border-top-0 w3-display-middle myLink" onclick="openLink(event, 'flight');" style="opacity: 0.9;display:block"><h1 class="text-monospace w3-xxlarge"><i class="fa fa-plane w3-margin-right glyphicon glyphicon-search"></i>Where to?</h1></button>
+            </div>
+
+            <!-- big search bar -->
+            <div id="flight" class="w3-container w3-white w3-round-large w3-padding-16 border-top-0 myLink" style="opacity: 1;box-shadow: 5px 10px 8px #888888;">
+                <h1 class="w3-display-topmiddle bg-transparent text-monospace text-info" style="margin-top:5px;margin-bottom:5px;">Travel singapore with us</h1>
+                <nav class="navbar navbar-expand-lg navbar-light bg-light" style="margin:16px">
+                    <div class="collapse navbar-collapse">
+                        <ul class="navbar-nav mr-auto w3-xlarge">
+                            <li class="btn btn-light bg-transparent text-info w3-xlarge" onclick="openLink(event,'search_bar')" style="width:50px"><i class="glyphicon glyphicon-search"></i></li>
+                            <li class="nav-item w3-margin-right">
+                                <p class="nav-link btn btn-light text-info w3-large">Singapore</p>
+                            </li>
+                            <!--Big search bar input-->
+                            <form class="" action="{{ url_for('search_bar')}}" method="post">
+                            <li class="nav-item btn-group">
+                                <button id="category" name="category" type="button" value="all" class="btn btn-light text-info dropdown-toggle w3-large" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
+                                Category</button>
+                                <div class="dropdown-menu mr-auto">
+                                    <option class="dropdown-item w3-large text-info"  id="res" value="resturant" onclick="changeCate(event, 'category')">Resturant</option>
+                                    <option class="dropdown-item w3-large text-info" id="accom" value="accommodation" onclick="changeCate(event, 'category')">Hotel</option>
+                                    <option class="dropdown-item w3-large text-info" id="attraction" value="attractions" onclick="changeCate(event, 'category')">Tourist attraction</option>
+                                </div>
+                            </li>
+                            <li class="nav-item w3-display-right" style="width:auto;max-width:800px">
+                                <div class="form-inline my-2 my-lg-0" style="width:auto;max-width:800px">
+                                    <input class="form-control w3-margin-right w3-large text-dark" name="search_input" style="width:500px;max-width:800px" type="search" placeholder="Search" aria-label="Search">
+                                    <button id="submit" class="btn btn-outline-info w3-xlarge" type="submit" value="all" name="submit" style="font-weight:bold">Search</button>
+                                </div>
+                            </li>
+                        </form>
+                        </ul>
+                    </div>
+                </nav>
+            </div>
+            <!--Big search bar input end here-->
+            <!--find out more reminder-->
+            <div class="w3-container  w3-display-middle text-white w3-medium" onmouseout="this.style.textDecoration='none'" onmouseover="this.style.textDecoration='underline'" style="opacity:0.5;margin-top:360px;position:absolute">
+                <a class="w3-large w3-text-white" ><b>Discover more</b></a><br>
+                <a><i class="glyphicon glyphicon-menu-down" style="margin-left:45px"></i></a><br>
+            </div>
+            <!--end of find out more  -->
+
+    </header>
+
+    <!-- top events -->
+    <div class="w3-content" style="max-width:1600px;">
+        <h1 class=" text-monospace bg-light w3-center w3-text-pink" style="opacity: 0.8;margin-top: 20px;padding: 15px;margin-left: 550px;width:500px"><b>Top events</b></h1>
+        <div class="w3-display-container w3-white" style="margin-bottom:50px;margin-top:10px;height:435px;padding:10px">
+            <!-- top events rows -->
+            <div class="w3-row">
+                {% if events %}
+                <!-- most left event box -->
+                <div class="w3-col w3-display-container" style="width:40%">
+                    <h1 class="w3-display-middle text-white w3-xxxlarge" style="opacity:1.0"><b> {{ events[1]['name'] }}</b></h1>
+                    <form action="{{ url_for('show_event', event_name=events[1]['name']) }}" method="post">
+                        <button class="btn btn-outline-dark border-0 w3-round "  type="submit" name="event_data" value="{{ events[1] }}">
+                            <img src="https://tih-api.stb.gov.sg/media/v1/download/uuid/{{ events[1]['images'][0]['uuid'] }}?apikey=BFqkp4V35i0fXflQav9OYnolQuEMLGAg" class="w3-image" style="opacity: 0.7;height:400px;width:100%">
+                        </button>
+                    </form>
+                </div>
+                <!-- end most left event box -->
+                <!-- middle event box -->
+                <div class="w3-col w3-display-container" style="width:35%">
+                    <!-- top half middle box -->
+                    <div class="w3-row w3-display-container">
+                        <h1 class="w3-display-middle text-white w3-xxlarge" style="opacity:1.0"><b> {{ events[0]['name'] }}</b></h1>
+                        <form action="{{ url_for('show_event', event_name=events[0]['name']) }}" method="post">
+                            <button class="btn btn-outline-dark border-0 w3-round " type="submit" name="event_data" value="{{ events[0] }}">
+                                <img src="https://tih-api.stb.gov.sg/media/v1/download/uuid/{{ events[0]['images'][0]['uuid'] }}?apikey=BFqkp4V35i0fXflQav9OYnolQuEMLGAg" class="w3-image" style="opacity: 0.7;height:200px;width:100%">
+                            </button>
+                        </form>
+                    </div>
+
+                    <!-- bottom half middle box -->
+                    <div class="w3-row w3-display-container">
+                        <h1 class="w3-display-middle text-white w3-xxlarge" style="opacity:1.0"><b>{{ events[2]['name'] }}</b></h1>
+                        <form action="{{ url_for('show_event', event_name=events[2]['name']) }}" method="post">
+                            <button class="btn btn-outline-dark border-0 w3-round " type="submit" name="event_data" value="{{ events[2] }}">
+                                <img src="https://tih-api.stb.gov.sg/media/v1/download/uuid/{{ events[2]['images'][0]['uuid'] }}?apikey=BFqkp4V35i0fXflQav9OYnolQuEMLGAg" class="w3-image" style="opacity: 0.7;height:200px;width:100%">
+                            </button>
+                        </form>
+                    </div>
+                </div>
+                <!-- end middle event box -->
+                <!-- most right event box -->
+                <div class="w3-col w3-display-container" style="width:25%">
+                    <h1 class="w3-display-middle text-white w3-xxlarge" style="opacity:1.0"><b> {{ events[3]['name'] }}</b></h1>
+                    <form action="{{ url_for('show_event', event_name=events[3]['name']) }}" method="post">
+                        <button class="btn btn-outline-dark border-0 w3-round " type="submit" name="event_data" value="{{ events[3] }}">
+                            <img src="https://tih-api.stb.gov.sg/media/v1/download/uuid/{{ events[3]['images'][0]['uuid'] }}?apikey=BFqkp4V35i0fXflQav9OYnolQuEMLGAg" class="w3-image" style="opacity: 0.7;height:400px;width:100%">
+                        </button>
+                    </form>
+                </div>
+                <!-- end most right event box -->
+                {% endif %}
+
+            </div>
+            <!-- end of events row -->
+        </div>
+    </div>
+    <!-- end top events -->
+    <hr style="margin-left: 90px;width:90%">
+
+    <!-- guide arrow -->
+    <div class="w3-display-right w3-text-dark w3-xlarge" style="position: absolute;margin-top:1280px;margin-right:250px;opacity:0.5;writing-mode: vertical-rl;text-orientation: mixed;">
+        <a><i class="fa fa-long-arrow-down w3-xxlarge" style="margin-left:45px"></i></a><br>
+    </div>
+    <div class="w3-display-right w3-text-dark w3-xlarge" style="position: absolute;margin-top:1680px;margin-right:250px;opacity:0.5;writing-mode: vertical-rl;text-orientation: mixed;">
+        <a><i class="fa fa-long-arrow-down w3-xxlarge" style="margin-left:45px"></i></a><br>
+    </div>
+
+
+    <!-- recommandation place -->
+    <div class="w3-content w3-display-container" style="max-width:1100px;">
+        <h1 class=" text-monospace bg-light w3-center w3-text-red" style="opacity: 0.8;margin-top: 20px;padding: 15px;margin-left: 300px;width:500px"><b>Recommended places</b></h1>
+
+        {% if results %}
+        {% for title,description in results.items() %}
+        <!-- recommandation image on left -->
+        <div class="w3-row bg-light" style="padding: 35px;height:400px;margin-top:15px">
+            {# want to have one left one right recursively #}
+            {% if loop.index % 2 == 0  %}
+            {% if photos %}
+            <div class="w3-col m6 w3-padding-large w3-hide-small">
+                <form action="{{ url_for('show_detail_by_name', place_name=title ) }}" method="post">
+                    <!-- here we want the suggested place in detail page always be attraction in singapre -->
+                    <input type="text" name="category" value="attractions" style="display:none">
+                    <input type="text" name="keyword" value="singapore" style="display:none">
+                    <button class="btn btn-outline-secondary border-0 w3-round  w3-opacity-min" type="submit" name="place_name" value="{{ title }}">
+                        <img src="{{photos[loop.index-1]}}" class="w3-image" width="600" height="1000">
+                    </button>
+                </form>
+            </div>
+            {% endif %}
+            {% endif %}
+
+            {# description #}
+            <div class="w3-col m6 w3-padding-large" >
+
+                <form action="{{ url_for('show_detail_by_name', place_name=title ) }}" method="post">
+                    <input type="text" name="category" value="attractions" style="display:none">
+                    <input type="text" name="keyword" value="singapore" style="display:none">
+                    <button class="btn" type="submit" name="place_name" value="{{ title }}">
+                        <h1 class="w3-center text-monospace text-info" style="opacity: 0.5;text-decoration:underline"><b>{{ title }}</b></h1>
+                    </button><br>
+                </form>
+                <p class="w3-large text-monospace w3-text-grey w3-hide-medium" style="opacity: 1"> {{description}}<millennium class=""></millennium></p>
+            </div>
+
+            {% if loop.index % 2 != 0  %}
+            {% if photos %}
+            <div class="w3-col m6 w3-padding-large w3-hide-small">
+                <form action="{{ url_for('show_detail_by_name', place_name=title ) }}" method="post">
+                    <input type="text" name="category" value="attractions" style="display:none">
+                    <input type="text" name="keyword" value="singapore" style="display:none">
+                    <button class="btn btn-outline-secondary border-0 w3-round  w3-opacity-min" type="submit" name="place_name" value="{{ title }}">
+                        <img src="{{photos[loop.index-1]}}" class="w3-image" width="600" height="1000">
+                    </button>
+                </form>
+            </div>
+            {% endif %}
+            {% endif %}
+        </div>
+        {% endfor %}
+        {% endif %}
+
+    </div>
+
+
+<!-- most visited places-->
+    <div class="w3-content w3-display-container" style="max-width:1100px;">
+        <h1 class=" text-monospace bg-light w3-center w3-text-red" style="opacity: 0.8;margin-top: 20px;padding: 15px;margin-left: 300px;width:500px"><b>Popular Places</b></h1>
+
+        {% if mvDetails %}
+        {% for mvdetails in mvDetails %}
+        <!-- recommandation image on left -->
+        <div class="w3-row bg-light" style="padding: 35px;height:400px;margin-top:15px">
+            {# want to have one left one right recursively #}
+            {% if loop.index % 2 == 0  %}
+            {% if mvdetails['images'] %}
+            <div class="w3-col m6 w3-padding-large w3-hide-small">
+                <form action="{{ url_for('show_detail_by_id') }}" method="post">
+                    <!-- here we want the suggested place in detail page always be attraction in singapre -->
+                    <input type="text" name="category" value="attractions" style="display:none">
+                    <input type="text" name="keyword" value="singapore" style="display:none">
+                    <button class="btn btn-outline-secondary border-0 w3-round  w3-opacity-min" type="submit" name="place_id" value="{{ mvdetails['uuid'] }}">
+                        <img src="https://tih-api.stb.gov.sg/media/v1/download/uuid/{{ mvdetails['images'][0]['uuid'] }}?apikey=BFqkp4V35i0fXflQav9OYnolQuEMLGAg" class="w3-image" width="600" height="">
+                    </button>
+                </form>
+            </div>
+            {% endif %}
+            {% endif %}
+
+            {# description #}
+            <div class="w3-col m6 w3-padding-large" >
+                <form action="{{ url_for('show_detail_by_id') }}" method="post">
+                            <!-- here we want the suggested place in detail page always be attraction in singapre -->
+                    <input type="text" name="category" value="attractions" style="display:none">
+                    <input type="text" name="keyword" value="singapore" style="display:none">
+                    <button class="btn" type="submit" name="place_id" value="{{ mvdetails['uuid'] }}">
+                        <h1 class="w3-center text-monospace text-info" style="opacity: 0.5;text-decoration:underline"><b>{{ mvdetails["name"] }}</b></h1>
+                    </button><br>
+                </form>
+                <p class="w3-large text-monospace w3-text-grey w3-hide-medium" style="opacity: 1"> {{mvdetails["body"] }}<millennium class=""></millennium></p>
+            </div>
+
+            {% if loop.index % 2 != 0  %}
+            {% if mvdetails['images'] %}
+            <div class="w3-col m6 w3-padding-large w3-hide-small">
+                <form action="{{ url_for('show_detail_by_id') }}" method="post">
+                    <input type="text" name="category" value="attractions" style="display:none">
+                    <input type="text" name="keyword" value="singapore" style="display:none">
+                    <button class="btn btn-outline-secondary border-0 w3-round  w3-opacity-min" type="submit" name="place_id" value="{{ mvdetails['uuid'] }}">
+                        <img src="https://tih-api.stb.gov.sg/media/v1/download/uuid/{{ mvdetails['images'][0]['uuid'] }}?apikey=BFqkp4V35i0fXflQav9OYnolQuEMLGAg" class="w3-image" width="600" height="300">
+                    </button>
+                </form>
+            </div>
+            {% endif %}
+            {% endif %}
+        </div>
+        {% endfor %}
+        {% endif %}
+
+    </div>
+    <hr style="margin-left: 90px;width:90%;margin-bottom:80px;margin-top:30px">
+    <!-- Footer -->
+    <footer class="w3-center w3-black text-monospace" style="padding:5px;background-color:#333">
+        <p class="w3-large">Powered by <a href="/home" target="_blank" class=" w3-large w3-hover-text-green">Better-than-tripadvisor</a></p>
+    </footer>
+
+
+{% endblock %}

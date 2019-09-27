@@ -1,0 +1,37 @@
+{% extends "base.html" %}
+
+{% block title %} <title>Edite your profile</title>{% endblock %}
+
+
+{% block content %}
+
+    <div class="w3-container bg-light w3-display-middle w3-card" style="width:600px;height:500px;">
+        <header class="w3-center text-info w3-xxlarge"> <b>Edit Your Profile</b></header>
+        <hr>
+        <div class="w3-third w3-light-blue w3-border-right" style="height:400px;">
+        </div>
+
+        <div class="w3-twothird">
+            <div class="w3-margin-left" style="margin-top:30px">
+                <form action="{{ url_for('edit_profile') }}", method="post">
+                    <p class="w3-left-align w3-large"><b>New password:</b></p>
+                    <input class="alert alert-light w3-border" style="width:300px" type="Password" name="pass" placeholder="password"><br>
+                    <p class="w3-left-align w3-large"><b>Comfirm new password:</b></p>
+                    <input class="alert alert-light w3-border" style="width:300px" type="Password" name="pass-check" placeholder="password"><br>
+                    <p class="w3-left-align w3-large"><b>Email:</b></p>
+                    <input class="alert alert-light w3-border" style="width:300px" type="text" name="email" placeholder="optional"><br>
+                    <div class="w3-row">
+                      <button class="w3-half btn btn-dark w3-large w3-margin-top w3-margin-right" style="width:100px" type="submit">Save</button>
+                      <a href="/profile" class="w3-half btn btn-primary text-white w3-large w3-margin-top w3-margin-right" style="width:150px">Back to profile</a>
+                    </div>
+            </div>
+                    {% with messages = get_flashed_messages() %}
+                        {% if messages %}
+                            {% for message in messages %}
+                                <h2 class="text-monospace text-danger w3-margin-top"><b>{{ message }}</b></h2>
+                            {% endfor %}
+                        {% endif %}
+                    {% endwith %}
+        </div>
+    </div>
+{% endblock %}
